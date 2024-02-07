@@ -1,6 +1,7 @@
 /**
  *
  * @author Robert McVey
+ * this program attemps to solve the knights tour problem, this time with a priority system
  */
 
 // class declaring and board size X,Y move arrays

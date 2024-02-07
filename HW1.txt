@@ -1,0 +1,105 @@
+
+/**
+ * This is a Java code that demonstrates how to implement a solution for the
+ * Knight's Tour problem. The Knight's Tour is a mathematical problem that
+ * involves finding a sequence of moves for a knight on a chessboard such that
+ * the knight visits every square exactly once.
+ * 
+ * Here is a line-by-line explanation of the code:
+ * 
+ * 1. `public static void main(String[] args) {`: This is the main method that
+ * is executed when the program is run. It takes an array of strings as input.
+ * 2. `int currentRow = 0;`: This initializes the current row of the knight to
+ * 0.
+ * 3. `int currentColumn = 0;`: This initializes the current column of the
+ * knight to 0.
+ * 4. `board[currentRow][currentColumn] = moveNumber;`: This sets the starting
+ * position of the knight on the chessboard to 1.
+ * 
+ * 
+ * 5. `while (moveNumber < BOARD_SIZE * BOARD_SIZE) {`: This is a while loop
+ * that continues until the knight has visited every square on the chessboard.
+ * 6. `int nextRow;`: This initializes the next row of the knight.
+ * 7. `int nextColumn;`: This initializes the next column of the knight.
+ * 8. `int minMoves = BOARD_SIZE + 1;`: This initializes the minimum number of
+ * moves to get to the next square to the maximum possible value.
+ * 9. `int bestMove = -1;`: This initializes the best move to -1.
+ * 
+ * 
+ * 10. `for (int moveType = 0; moveType < HORIZONTAL.length; moveType++) {`:
+ * This is a for loop that iterates over all possible moves for the knight.
+ * 11. `nextRow = currentRow + VERTICAL[moveType];`: This calculates the row of
+ * the next square.
+ * 12. `nextColumn = currentColumn + HORIZONTAL[moveType];`: This calculates the
+ * column of the next square.
+ * 
+ * 
+ * 13. `if (nextRow >= 0 && nextRow < BOARD_SIZE && nextColumn >= 0 &&
+ * nextColumn < BOARD_SIZE && board[nextRow][nextColumn] == 0) {`: This checks
+ * if the next square is a valid move for the knight.
+ * 14. `int moves = 0;`: This initializes the number of possible moves from the
+ * next square to 0.
+ * 
+ * 
+ * 15. `for (int i = 0; i < HORIZONTAL.length; i++) {`: This is a for loop that
+ * iterates over all possible moves from the next square.
+ * 16. `int row = nextRow + VERTICAL[i];`: This calculates the row of the square
+ * that can be reached from the next square.
+ * 17. `int column = nextColumn + HORIZONTAL[i];`: This calculates the column of
+ * the square that can be reached from the next square.
+ * 
+ * 
+ * 18. `if (row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE
+ * && board[row][column] == 0) {`: This checks if the square that can be reached
+ * from the next square is a valid move for the knight.
+ * 19. `moves++;`: This increments the number of possible moves from the next
+ * square.
+ * 20. `}`: This ends the if statement.
+ * 21. `}`: This ends the for loop.
+ * 
+ * 
+ * 22. `if (moves < minMoves) {`: This checks if the number of possible moves
+ * from the next square is less than the minimum number of moves to get to the
+ * next square.
+ * 23. `minMoves = moves;`: This updates the minimum number of moves to get to
+ * the next square.
+ * 24. `bestMove = moveType;`: This updates the best move to the current move
+ * type.
+ * 25. `}`: This ends the if statement.
+ * 26. `}`: This ends the for loop.
+ * 
+ * 
+ * 27. `if (bestMove == -1) {`: This checks if there are no valid moves from the
+ * current square.
+ * 28. `break;`: This breaks out of the while loop.
+ * 29. `}`: This ends the if statement.
+ * 30. `currentRow += VERTICAL[bestMove];`: This updates the current row of the
+ * knight to the row of the next square.
+ * 31. `currentColumn += HORIZONTAL[bestMove];`: This updates the current column
+ * of the knight to the column of the next square.
+ * 32. `moveNumber++;`: This increments the move number.
+ * 33. `board[currentRow][currentColumn] = moveNumber;`: This sets the value of
+ * the current square to the move number.
+ * 34. `}`: This ends the while loop.
+ * 
+ * 35. `for (int row = 0; row < BOARD_SIZE; row++) {`: This is a for loop that
+ * iterates over all rows of the chessboard.
+ * 
+ * 36. `for (int column = 0; column < BOARD_SIZE; column++) {`: This is a for
+ * loop that iterates over all columns of the chessboard.
+ * 37. `System.out.printf("%2d ", board[row][column]);`: This prints the value
+ * of the
+ * 
+ * Source: Conversation with Bing, 1/28/2024
+ * (1) Denigma - AI that reads and explains code in understandable english.
+ * https://denigma.app/.
+ * (2) Java Read File Line by Line - Java Tutorial - Roseindia.
+ * https://www.roseindia.net/java/beginners/java-read-file-line-by-line.shtml.
+ * (3) java - How can I step through my Android Studio Application, line-by ....
+ * https://stackoverflow.com/questions/40075777/how-can-i-step-through-my-android-studio-application-line-by-line.
+ * (4) Java Visualizer - University of Waterloo.
+ * https://cscircles.cemc.uwaterloo.ca/java_visualize/.
+ * 
+ * 
+ * 
+ */
