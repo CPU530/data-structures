@@ -2,10 +2,14 @@ public class SLinked_ListOfString implements ListOfString_Interface {
 
     private String[] elements;
     private int size;
+    private String tail;
+    private String head;
 
-    public SLinked_ListOfString(int initialCapacity) {
-        elements = new String[initialCapacity];
+    public SLinked_ListOfString() {
+        /* add call to snode constuctor */
         size = 0;
+        tail = null;
+        head = null;
     }
 
     @Override

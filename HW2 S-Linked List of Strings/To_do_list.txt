@@ -1,0 +1,3 @@
+create snode class
+fix constructor for the list class
+add get and fix remove methods
