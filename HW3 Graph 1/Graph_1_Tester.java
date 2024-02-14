@@ -211,15 +211,15 @@ public class Graph_1_Tester {
     }
     
     public static void getVerticesTest(){
-        String[] expected, received;    
+        String[] expected, received;
         
         Graph g = new StringGraph();
         g.addVertices(new String[]{"C", "A", "E", "B", "D"});
         
+        
         expected = new String[]{"A", "B", "C", "D", "E"};
         
         received = g.getVertices();
-        
         Arrays.sort(received);
         
         tests.add(new TestResult("Get Vertices Test 1", expected, received));
@@ -235,8 +235,6 @@ public class Graph_1_Tester {
         String[][] expectedEdges = new String[][]{{"A", "C"}, {"B", "C"}, {"B", "D"}};
         String[][] receivedEdges = g.getEdges();
         
-        
-  
         for(String[] edge : receivedEdges){
             Arrays.sort(edge);
         }

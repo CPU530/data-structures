@@ -27,7 +27,7 @@ public class StringGraph implements Graph {
         this.numVertices = 0;
         this.numEdges = 0;
         this.labels = new String[capacity];
-        this.edgeMatrix = new boolean[capacity][2];
+        this.edgeMatrix = new boolean[capacity][capacity];
 
     }
 
@@ -39,7 +39,7 @@ public class StringGraph implements Graph {
         this.numVertices = 0;
         this.numEdges = 0;
         this.labels = new String[DEFAULT_CAPACITY];
-        this.edgeMatrix = new boolean[DEFAULT_CAPACITY][2];
+        this.edgeMatrix = new boolean[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
     }
 
     @Override
@@ -70,23 +70,34 @@ public class StringGraph implements Graph {
         return nonNullVertices;
     }
 
+    @Override
     public String[][] getEdges() {
-        String[][] edgesWithLabels = new String[numEdges][2];
-        // Each row represents an edge (pair of vertices)
-
-        for (int j = 0; j < edgeMatrix.length; j++) {
-            for (int i = 0; i < edgeMatrix.length; i++) {
-                if (edgeMatrix[j][i]) {
-                    // If there's an edge between vertex j and i, store their labels in the result
-                    // array.
-                    edgesWithLabels[numEdges][0] = labels[j]; // Label for vertex j
-                    edgesWithLabels[numEdges][1] = labels[i]; // Label for vertex i
-
+        int edgeCount =  0;
+        // Count the number of edges
+        for (int i =  0; i < numVertices; i++) {
+            for (int j =  0; j < numVertices; j++) {
+                if (edgeMatrix[i][j]) {
+                    edgeCount++;
                 }
             }
         }
 
-        return edgesWithLabels;
+        // Allocate the array with the correct size
+        String[][] edges = new String[edgeCount][2];
+        int edgeIndex =  0; // Index for the edges array
+
+        // Populate the edges array
+        for (int i =  0; i < numVertices; i++) {
+            for (int j =  0; j < numVertices; j++) {
+                if (edgeMatrix[i][j]) {
+                    edges[edgeIndex][0] = labels[i];
+                    edges[edgeIndex][1] = labels[j];
+                    edgeIndex++;
+                }
+            }
+        }
+        System.out.println(Arrays.deepToString(edges));
+        return edges;
     }
 
     @Override
@@ -104,10 +115,12 @@ public class StringGraph implements Graph {
         System.arraycopy(labels, 0, newLabels, 0, numVertices);
 
         // edge matrix resize
-        String[][] newEdges = new String[newCapacity][2];
+        boolean[][] newEdges = new boolean[newCapacity][newCapacity];
         System.arraycopy(edgeMatrix, 0, newEdges, 0, numEdges);
         capacity = newCapacity;
         labels = newLabels;
+       
+        edgeMatrix = newEdges;
     }
 
     @Override
@@ -148,14 +161,15 @@ public class StringGraph implements Graph {
         if (!vertexExists(vertex1) || !vertexExists(vertex2)) {
             throw new GraphException("One or both vertices do not exist.");
         }
-        for (int i = 0; i < numEdges; i++) {
-            if ((edgeMatrix[i][0] && edgeMatrix[i][1]) ||
-                    (edgeMatrix[i][1] && edgeMatrix[i][0])) {
-
-                System.out.println((edgeMatrix[i][0]));
-                System.out.println((edgeMatrix[i][1]));
-                return true;
-            }
+        // this is incorrect as there are fixed numbers in the fields
+        // find the indicies of the verteex 1 and vertex 2 so that the "X,Y" in the
+        // edgeMatrix can be checked specifically
+        
+        int index1 = findIndex(vertex1);
+        int index2 = findIndex(vertex2);
+        if (edgeMatrix[index1][index2] == true ) {
+            
+            return true;
         }
         return false;
     }
@@ -168,14 +182,16 @@ public class StringGraph implements Graph {
         if (!vertexExists(vertex1) || !vertexExists(vertex2)) {
             throw new GraphException("One or both vertices do not exist.");
         }
-        if (numEdges >= capacity - 1) {
-            resize(capacity * 2);
-        }
-        if (edgeExists(vertex1, vertex2)) {
-            edgeMatrix[numEdges][0] = true;
-            edgeMatrix[numEdges][1] = true;
-            numEdges++;
-        }
+        // need to make this actually affect the right point in the edge matric which
+        // means it should be soemthing like edgeMatrix[vertex1][vertex2]
+
+        int index1 = findIndex(vertex1);
+        int index2 = findIndex(vertex2);
+        
+        // Add the edge to the edgeMatrix
+        edgeMatrix[index1][index2] = true;
+        edgeMatrix[index2][index1] = true; // For undirected graph
+        numEdges++;
     }
 
     @Override
@@ -187,5 +203,14 @@ public class StringGraph implements Graph {
             addEdge(Label[0], Label[1]);
         }
 
+    }
+
+    private int findIndex(String label) {
+        for (int i = 0; i < numVertices; i++) {
+            if (labels[i].equals(label)) {
+                return i;
+            }
+        }
+        return -1; // Not found
     }
 }
