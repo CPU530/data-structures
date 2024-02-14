@@ -1,0 +1,83 @@
+    /**
+     * Return a string showing the vertices and edges of this graph. The
+     * vertices are in sorted order. The two vertices of each edge are in sorted
+     * order and the list of all edges are shown in sorted order.
+     * 
+     * @return a string showing the vertices and edges of this graph
+     */
+    public String getGraphString() {
+        String[] vertices = this.getVertices();
+        Arrays.sort(vertices);
+
+        String[][] edges = this.getEdges();
+        for (String[] edge : edges) {
+            Arrays.sort(edge);
+        }
+
+        // Make a comparator using a lambda expression
+        java.util.Comparator<String[]> comp = (String[] a, String[] b) -> {
+            if (!a[0].equals(b[0])) {
+                return a[0].compareTo(b[0]);
+            } else {
+                return a[1].compareTo(b[1]);
+            }
+        };
+
+        Arrays.sort(edges, comp);
+
+        String s = "Vertices: " + Arrays.toString(vertices);
+        s += "\nEdges:";
+        for (String[] edge : edges) {
+            s += "\n" + Arrays.toString(edge);
+        }
+
+        return s;
+    }
+
+    /**
+     * Returns a string containing the adjacency matrix for this graph. The
+     * entire adjacency matrix is not necessarily included. Only rows and
+     * columns corresponding to vertices are provided. True values are shown as
+     * "T" and false values are shown as "-". The rows and columns are labeled
+     * with both the index as well as the vertex label.
+     * 
+     * @return A string showing the adjacency matrix for this graph.
+     */
+    public String getMatrixString() {
+        // width of field for printing values is 2 larger than the size of
+        // the widest number
+        String s = "";
+        boolean n;
+
+        // Column headings (Labels)
+        s += "    "; // spaces to get over to first column
+        for (int i = 0; i < numVertices; i++) {
+            s += String.format("%3s", labels[i]);
+        }
+        s += "\n";
+
+        // Column headings (Rows)
+        s += "    "; // spaces to get over to first column
+        for (int i = 0; i < numVertices; i++) {
+            s += String.format("%3d", i);
+        }
+        s += "\n\n";
+
+        // Individual rows, with row heading before each
+        for (int r = 0; r < numVertices; r++) {
+            s += String.format("%s", labels[r]); // label at start of each row
+            s += String.format(" %-2s", r); // row number at start of each row
+            for (int c = 0; c < numVertices; c++) {
+                n = edgeMatrix[r][c];
+                if (n == false) {
+                    s = s + String.format("%3s", "-");
+                } else {
+                    s = s + String.format("%3s", "T");
+                }
+            }
+            s += "\n";
+        }
+
+        return s;
+
+    }

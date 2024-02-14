@@ -1,3 +1,10 @@
+/**
+ *
+ * @author Robert McVey
+ * this program fail to create a single linked list of snodes that contain strings as data
+ */
+
+
 public class SLinked_ListOfString implements ListOfString_Interface {
 
     private String[] elements;
@@ -6,10 +13,9 @@ public class SLinked_ListOfString implements ListOfString_Interface {
     private String head;
 
     public SLinked_ListOfString() {
-        /* add call to snode constuctor */
-        size = 0;
-        tail = null;
-        head = null;
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
     }
 
     @Override
@@ -18,12 +24,11 @@ public class SLinked_ListOfString implements ListOfString_Interface {
             throw new IndexOutOfBoundsException("Index out of bounds: " + i);
         }
 
-        // Shift elements to make space for the new one
+        
         for (int j = size; j > i; j--) {
             elements[j] = elements[j - 1];
         }
 
-        // Add the new element
         elements[i] = str;
         size++;
     }
@@ -50,17 +55,14 @@ public class SLinked_ListOfString implements ListOfString_Interface {
             throw new IndexOutOfBoundsException("Index out of bounds: " + i);
         }
     
-        String removedElement = elements[i]; // Store the element to be removed
+        String removedElement = elements[i]; 
     
-        // Shift elements to fill the gap left by the removed element
         for (int j = i; j < size - 1; j++) {
             elements[j] = elements[j + 1];
         }
     
-        elements[size - 1] = null; // Set the last element to null (optional)
-    
-        size--; // Decrease the size of the list
-    
+        elements[size - 1] = null; 
+        size--; 
         return removedElement;
     }
     
@@ -68,9 +70,8 @@ public class SLinked_ListOfString implements ListOfString_Interface {
     @Override
     public String removeFirst() throws IllegalStateException {
     if (size > 0) {
-        remove(0); // Remove the first element
+        remove(0); 
         }
-            // If the list is empty, no action needed
     return null;
     
     }
@@ -80,10 +81,9 @@ public class SLinked_ListOfString implements ListOfString_Interface {
             throw new IllegalStateException("List is empty");
         }
 
-        String removedElement = elements[size - 1]; // Get the last element
-        elements[size - 1] = null; // Set the last element to null (optional)
-        size--; // Decrease the size of the list
-
+        String removedElement = elements[size - 1]; 
+        elements[size - 1] = null; 
+        size--; 
         return removedElement;
     }
 
@@ -92,82 +92,153 @@ public class SLinked_ListOfString implements ListOfString_Interface {
         for (int i = 0; i < size; i++) {
             if (elements[i] != null && elements[i].equals(str)) {
                 String removedElement = elements[i];
-                remove(i); // Remove the element at index i
+                remove(i); 
                 return removedElement;
             }
         }
-        return null; // Element not found
+        return null; 
     }
 
     @Override
     public String get(int i) throws IndexOutOfBoundsException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
+        if (i < 0 || i >= size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + i);
+        }
+       
+        return this.get(i); 
     }
 
     @Override
     public String getFirst() throws IllegalStateException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFirst'");
+        if (isEmpty()) {
+            throw new IllegalStateException("List is empty.");
+        }
+       
+        return this.get(0);
     }
 
     @Override
     public String getLast() throws IllegalStateException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getLast'");
+        if (isEmpty()) {
+            throw new IllegalStateException("List is empty.");
+        }
+        
+        return this.get(this.size() - 1); 
     }
 
     @Override
     public String set(int i, String str) throws IndexOutOfBoundsException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'set'");
+        if (i < 0 || i >= size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + i);
+        }
+        String oldElement = this.get(i); 
+        this.set(i, str); 
+        return oldElement;
     }
 
     @Override
     public String setFirst(String str) throws IllegalStateException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFirst'");
+        if (isEmpty()) {
+            throw new IllegalStateException("List is empty.");
+        }
+       
+        String oldElement = this.get(0); 
+        this.set(0, str); 
+        return oldElement;
     }
 
     @Override
     public String setLast(String str) throws IllegalStateException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setLast'");
+        if (isEmpty()) {
+            throw new IllegalStateException("List is empty.");
+        }
+        
+        int lastIndex = this.size() - 1;
+        String oldElement = this.get(lastIndex); 
+        this.set(lastIndex, str);
+        return oldElement;
     }
-
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isEmpty'");
+        return head == null;
     }
+
+
+
+
+
+
+
+/*
+ * im completely lost 
+ */
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean contains(String str) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'contains'");
+        SNode_Stringe.current = head;
+        while (current != null) {
+    if (current.data.equals(str)) {
+            return true;
+        }
+        current = current.next;
     }
-
+        return false;
+    }
+    
     @Override
     public int firstIndexOf(String str) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'firstIndexOf'");
+        SNode_Stringe.current = head;
+        int index = 0;
+        while (current != null) {
+            if (current.data.equals(str)) {
+                return index;
+            }
+            current = current.next;
+            index++;
+        }
+        return -1;
+    }
+    @Override
+       public int lastIndexOf(String str) {
+        SNode_Stringe.current = head;
+        int lastIndex = -1; 
+        int index = 0;
+
+        while (current != null) {
+            if (current.data.equals(str)) {
+                lastIndex = index; 
+            }
+            current = current.next;
+            index++;
+        }
+
+        return lastIndex;
     }
 
-    @Override
-    public int lastIndexOf(String str) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'lastIndexOf'");
-    }
 
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'size'");
+        int count = 0;
+        SNode_Stringe.current = head;
+        while (current != null) {
+            count++;
+            current = current.next;
+        }
+        return count;
     }
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clear'");
+        head = null;
     }
 }
