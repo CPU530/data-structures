@@ -228,33 +228,39 @@ public class StringGraph implements Graph {
     @Override
     public void deleteVertex(String vertex) throws GraphException {
         // must called delete edge
-
+        if (!vertexExists(vertex)) {
+            throw new GraphException("The vertex do not exist.");
+        }
         for (int i = 0; i < numVertices; i++) {
-            if (!vertexExists(vertex)) {
-                throw new GraphException("The vertex do not exist.");     
-            }
             if (labels[i] != vertex) {
                 if (edgeExists(vertex, labels[i])) {
                     deleteEdge(vertex, labels[i]);
                 }
-                
-                System.out.println(Arrays.deepToString(labels));        
-            }
-          
-        }    
-        int index1 = findIndex(vertex);
-        String[] nonNullVertices = new String[numVertices];
-        int index = 0;
-        labels[index1] = null;
-        for (String pos : labels) {
-            if (pos != null) {
-                nonNullVertices[index] = pos;
-                index++;
+                // error here exist because the label is never removed
+                /*
+                 * should be something like this
+                 * index_1 = findindex(vertex)
+                 * labels[index_1] = ????
+                 * or labels[index_1] = labels.remove(vertex)????
+                 * or something of the like i have no idea how this would affect the edge matrix
+                 * or what not so ./shrug
+                 * ================================
+                 * original idea here
+                 * ================================
+                 * int index1 = findIndex(vertex);
+                 * String[] nonNullVertices = new String[numVertices];
+                 * int index = 0;
+                 * labels[index1] = null;
+                 * for (String pos : labels) {
+                 * if (pos != null) {
+                 * nonNullVertices[index] = pos;
+                 * index++;
+                 * }
+                 * }
+                 * labels = nonNullVertices;
+                 */
             }
         }
-        labels = nonNullVertices;
-    
-        
     }
 
     @Override
