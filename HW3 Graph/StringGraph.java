@@ -1,3 +1,9 @@
+/**
+ *
+ * @author Robert McVey
+ * this program creates a graph that creates and maintains an adjacency matrix
+ */
+
 import java.util.Arrays;
 
 public class StringGraph implements Graph {
@@ -64,7 +70,6 @@ public class StringGraph implements Graph {
             }
         }
 
-        // Sort the non-null vertices alphabetically
         Arrays.sort(nonNullVertices);
 
         return nonNullVertices;
@@ -72,31 +77,18 @@ public class StringGraph implements Graph {
 
     @Override
     public String[][] getEdges() {
-        int edgeCount =  0;
-        // Count the number of edges
+        String[][] edges = new String[numEdges][2];
+        int edgeIndex =  0; 
         for (int i =  0; i < numVertices; i++) {
-            for (int j =  0; j < numVertices; j++) {
+            for (int j =  i; j < numVertices; j++) {
                 if (edgeMatrix[i][j]) {
-                    edgeCount++;
-                }
-            }
-        }
-
-        // Allocate the array with the correct size
-        String[][] edges = new String[edgeCount][2];
-        int edgeIndex =  0; // Index for the edges array
-
-        // Populate the edges array
-        for (int i =  0; i < numVertices; i++) {
-            for (int j =  0; j < numVertices; j++) {
-                if (edgeMatrix[i][j]) {
+                    
                     edges[edgeIndex][0] = labels[i];
                     edges[edgeIndex][1] = labels[j];
                     edgeIndex++;
                 }
             }
         }
-        System.out.println(Arrays.deepToString(edges));
         return edges;
     }
 
@@ -110,11 +102,10 @@ public class StringGraph implements Graph {
         if (newCapacity <= capacity) {
             throw new IllegalArgumentException("New capacity must be greater than the current capacity.");
         }
-        // labels resize
+
         String[] newLabels = new String[newCapacity];
         System.arraycopy(labels, 0, newLabels, 0, numVertices);
 
-        // edge matrix resize
         boolean[][] newEdges = new boolean[newCapacity][newCapacity];
         System.arraycopy(edgeMatrix, 0, newEdges, 0, numEdges);
         capacity = newCapacity;
