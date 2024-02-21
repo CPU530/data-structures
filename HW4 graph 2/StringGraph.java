@@ -232,35 +232,47 @@ public class StringGraph implements Graph {
             throw new GraphException("The vertex do not exist.");
         }
         for (int i = 0; i < numVertices; i++) {
+            // remove edges from related vertex
             if (labels[i] != vertex) {
                 if (edgeExists(vertex, labels[i])) {
                     deleteEdge(vertex, labels[i]);
                 }
-                // error here exist because the label is never removed
-                /*
-                 * should be something like this
-                 * index_1 = findindex(vertex)
-                 * labels[index_1] = ????
-                 * or labels[index_1] = labels.remove(vertex)????
-                 * or something of the like i have no idea how this would affect the edge matrix
-                 * or what not so ./shrug
-                 * ================================
-                 * original idea here
-                 * ================================
-                 * int index1 = findIndex(vertex);
-                 * String[] nonNullVertices = new String[numVertices];
-                 * int index = 0;
-                 * labels[index1] = null;
-                 * for (String pos : labels) {
-                 * if (pos != null) {
-                 * nonNullVertices[index] = pos;
-                 * index++;
-                 * }
-                 * }
-                 * labels = nonNullVertices;
-                 */
+
             }
         }
+        // store edges so that they can be appended later
+        String[][] edge_recreation = getEdges();
+
+        // overwrite label value with last values of label
+        int Del_Vertex_index = findIndex(vertex);
+
+        // find the last label/index of last label in the list
+        int last_vertex_index = findIndex(labels[(numVertices - 1)]);
+
+        // reduce the count of vertices
+        numVertices--;
+
+        // assign last label to the specified inxdex to be deleted
+        labels[Del_Vertex_index] = labels[last_vertex_index];
+
+        // this removes the last item in the array effectively removing the duplicate
+        String[] newLabels = new String[numVertices];
+        System.arraycopy(labels, 0, newLabels, 0, numVertices);
+        labels = newLabels;
+
+        // make instance of class with new matrix with correct values and then swap the
+        // adjacency matrix's of the two
+
+        // StringGraph new_matrix = new StringGraph(newLabels, edge_recreation);
+        // this.edgeMatrix = new_matrix.edgeMatrix;
+
+        // it has come to my attention that calling a class withing a class to create a
+        // new matrix which was simple to do was ultimately dum so now we have
+        // "crete_new_graph()" ./sigh ./shrug
+
+        boolean[][] test = new boolean[numVertices][numVertices];
+        this.edgeMatrix = create_new_graph(test, edge_recreation);
+        
     }
 
     @Override
@@ -367,4 +379,32 @@ public class StringGraph implements Graph {
 
         return Degree_Vertex;
     };
+
+    public boolean[][] create_new_graph(boolean[][] empty_graph, String[][] Edges_add) {
+
+        for (String[] Label : Edges_add) {
+            if (Label.length != 2) {
+                throw new GraphException("Invalid edge format: " + Arrays.toString(Label));
+            }
+
+            if (edgeExists(Label[0], Label[1])) {
+                throw new GraphException("Edge already exists: {" + Label[0] + ", " + Label[1] + "}");
+            }
+            if (!vertexExists(Label[0]) || !vertexExists(Label[1])) {
+                throw new GraphException("One or both vertices do not exist.");
+            }
+            // need to make this actually affect the right point in the edge matric which
+            // means it should be soemthing like edgeMatrix[vertex1][vertex2]
+
+            int index1 = findIndex(Label[0]);
+            int index2 = findIndex(Label[1]);
+
+            // Add the edge to the edgeMatrix
+            empty_graph[index1][index2] = true;
+            empty_graph[index2][index1] = true; // For undirected graph
+        }
+
+        boolean[][] new_graph = empty_graph;
+        return new_graph;
+    }
 }
