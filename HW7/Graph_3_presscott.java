@@ -5,6 +5,7 @@ import java.util.Arrays;
 /**
  *
  * @author Robert McVey
+ * so this is my tester that im using to return what the objects to see if they are returning correctly 
  */
 public class Graph_3_presscott {
 

@@ -412,6 +412,11 @@ public class StringGraph implements Graph {
     @Override
     public String[] getNeighbors(String vertex) throws GraphException {
         /*
+         * this my logical idea however there is an error in the code as if you check "Graph_3_presscott.java" i add the following
+         *    String[] vertices = new String[]{"A", "B", "C", "D", "P", "V"};
+         *    String[][] edges = {{"A", "C"}, {"C", "D"}, {"C", "B"}, {"D", "A"}, {"D", "P"}, {"P", "V"}};
+         * thus should V have P as a neighbor but in execution youll find that V has no neighbors..... idk whats wrong here
+         * 
          * need all edges and vertexs then parse
          * exsisting edges for pair that includes vertex
          * if a pair is found then find the other vertex
@@ -439,7 +444,9 @@ public class StringGraph implements Graph {
         String[] new_neighbors = removeNullsFromStringArray(neighbors);
         return new_neighbors;
     }
-
+    // there is an error in this funtion and i beleive it is in the for loop at line 476
+    // the issue being i need to check against both the que and the list of visited points
+    // as of now i only check against the visited  because dupecheck_list = dupecheck = visited 
     @Override
     public String[] bfsOrder(String vertex) throws GraphException {
         String[] queue = this.getNeighbors(vertex);
@@ -523,6 +530,10 @@ public class StringGraph implements Graph {
         }
         return listWithoutNulls.toArray(new String[0]);
     }
+ /*
+
+
+ignore this i was attempting to do a I for x in array through  a function but i had issuse adding to the que
 
     public String[] visitStrings(String[] queue) {
         String[] visited = new String[numVertices];
@@ -532,4 +543,5 @@ public class StringGraph implements Graph {
 
         return visited;
     }
+ */
 }
