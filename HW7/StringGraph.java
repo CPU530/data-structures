@@ -8,6 +8,7 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class StringGraph implements Graph {
     // Number of vertices that can be stored in this graph before the size of the
@@ -272,7 +273,7 @@ public class StringGraph implements Graph {
 
         boolean[][] test = new boolean[numVertices][numVertices];
         this.edgeMatrix = create_new_graph(test, edge_recreation);
-        
+
     }
 
     @Override
@@ -410,20 +411,83 @@ public class StringGraph implements Graph {
 
     @Override
     public String[] getNeighbors(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNeighbors'");
         /*
          * need all edges and vertexs then parse
          * exsisting edges for pair that includes vertex
-         * if a pair is found then find the other vertex 
+         * if a pair is found then find the other vertex
          * in the edge pair and add it to a list of neighbors
          */
+        String[][] edge_list = this.getEdges();
+        String[] neighbors = new String[edge_list.length];
+
+        int index = 0;
+        for (int i = 0; i < edge_list.length - 1; i++) {
+
+            if (edge_list[i][1] == vertex) {
+                neighbors[index] = edge_list[i][0];
+                index++;
+
+            }
+            if (edge_list[i][0] == vertex) {
+                neighbors[index] = edge_list[i][1];
+                index++;
+
+            }
+
+        }
+
+        String[] new_neighbors = removeNullsFromStringArray(neighbors);
+        return new_neighbors;
     }
 
     @Override
     public String[] bfsOrder(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'bfsOrder'");
+        String[] queue = this.getNeighbors(vertex);
+        Arrays.sort(queue);
+        String[] visited = new String[numVertices];
+        visited[0] = vertex;
+        int i = 0;
+
+        while (queue.length > 0) {
+
+            //add visted point to visited list
+            visited[i + 1] = queue[0];
+            
+            //generate list of neighbors to be added to the back 
+            String[] add_to_back = getNeighbors(queue[0]);
+            
+            String[] dupecheck = visited;
+
+            List<String> dupecheck_List = Arrays.asList(dupecheck);
+
+
+            queue[0] = null;
+            queue = removeNullsFromStringArray(queue);
+            String[] new_que = new String[(queue.length) + (add_to_back.length)];
+            int j = 0;
+
+
+            // add all of que to new que
+            for (; j < queue.length; j++) {
+                new_que[j] = queue[j];
+            }
+            
+            // add all of add to back to new que
+            for (int X = 0; j < new_que.length; j++) {
+                if (!dupecheck_List.contains(add_to_back[X]) ) {
+
+                    new_que[j] = add_to_back[X];
+
+                }
+                X++;
+            }
+            queue = new_que;
+            queue = removeNullsFromStringArray(queue);
+            i++;
+            
+        }
+        return visited;
+
     }
 
     @Override
@@ -448,5 +512,24 @@ public class StringGraph implements Graph {
     public boolean isConnected() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isConnected'");
+    }
+
+    public static String[] removeNullsFromStringArray(String[] inputArray) {
+        List<String> listWithoutNulls = new ArrayList<>();
+        for (String element : inputArray) {
+            if (element != null) {
+                listWithoutNulls.add(element);
+            }
+        }
+        return listWithoutNulls.toArray(new String[0]);
+    }
+
+    public String[] visitStrings(String[] queue) {
+        String[] visited = new String[numVertices];
+        for (int i = 0; i < queue.length; i++) {
+            visited[i + 1] = queue[i];
+        }
+
+        return visited;
     }
 }
