@@ -8,7 +8,10 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 public class StringGraph implements Graph {
     // Number of vertices that can be stored in this graph before the size of the
@@ -127,11 +130,12 @@ public class StringGraph implements Graph {
         System.arraycopy(labels, 0, newLabels, 0, numVertices);
 
         boolean[][] newEdges = new boolean[newCapacity][newCapacity];
-        System.arraycopy(edgeMatrix, 0, newEdges, 0, numEdges);
+        // System.arraycopy(edgeMatrix, 0, newEdges, 0, numEdges);
         capacity = newCapacity;
         labels = newLabels;
 
-        edgeMatrix = newEdges;
+        // edgeMatrix = newEdges;
+        edgeMatrix = create_new_graph(newEdges, getEdges());
     }
 
     @Override
@@ -387,10 +391,12 @@ public class StringGraph implements Graph {
             if (Label.length != 2) {
                 throw new GraphException("Invalid edge format: " + Arrays.toString(Label));
             }
-
-            if (edgeExists(Label[0], Label[1])) {
-                throw new GraphException("Edge already exists: {" + Label[0] + ", " + Label[1] + "}");
-            }
+            /*
+             * if (edgeExists(Label[0], Label[1])) {
+             * throw new GraphException("Edge already exists: {" + Label[0] + ", " +
+             * Label[1] + "}");
+             * }
+             */
             if (!vertexExists(Label[0]) || !vertexExists(Label[1])) {
                 throw new GraphException("One or both vertices do not exist.");
             }
@@ -411,114 +417,215 @@ public class StringGraph implements Graph {
 
     @Override
     public String[] getNeighbors(String vertex) throws GraphException {
-        /*
-         * this my logical idea however there is an error in the code as if you check "Graph_3_presscott.java" i add the following
-         *    String[] vertices = new String[]{"A", "B", "C", "D", "P", "V"};
-         *    String[][] edges = {{"A", "C"}, {"C", "D"}, {"C", "B"}, {"D", "A"}, {"D", "P"}, {"P", "V"}};
-         * thus should V have P as a neighbor but in execution youll find that V has no neighbors..... idk whats wrong here
-         * 
-         * need all edges and vertexs then parse
-         * exsisting edges for pair that includes vertex
-         * if a pair is found then find the other vertex
-         * in the edge pair and add it to a list of neighbors
-         */
-        String[][] edge_list = this.getEdges();
-        String[] neighbors = new String[edge_list.length];
+        String[] neighbors = new String[numVertices];
+        int V_POS = findIndex(vertex);
 
-        int index = 0;
-        for (int i = 0; i < edge_list.length - 1; i++) {
+        for (int i = 0; i < numVertices; i++) {
 
-            if (edge_list[i][1] == vertex) {
-                neighbors[index] = edge_list[i][0];
-                index++;
-
-            }
-            if (edge_list[i][0] == vertex) {
-                neighbors[index] = edge_list[i][1];
-                index++;
-
+            if (this.edgeMatrix[V_POS][i] == true) {
+                neighbors[i] = labels[i];
             }
 
         }
-
-        String[] new_neighbors = removeNullsFromStringArray(neighbors);
-        return new_neighbors;
+        neighbors = removeNullsFromStringArray(neighbors);
+        return neighbors;
     }
-    // there is an error in this funtion and i beleive it is in the for loop at line 476
-    // the issue being i need to check against both the que and the list of visited points
-    // as of now i only check against the visited  because dupecheck_list = dupecheck = visited 
+
     @Override
     public String[] bfsOrder(String vertex) throws GraphException {
-        String[] queue = this.getNeighbors(vertex);
-        Arrays.sort(queue);
-        String[] visited = new String[numVertices];
-        visited[0] = vertex;
-        int i = 0;
+        ArrayList<String> que = new ArrayList<String>();
+        que.add(vertex);
+        ArrayList<String> visit_order = new ArrayList<String>();
 
-        while (queue.length > 0) {
-
-            //add visted point to visited list
-            visited[i + 1] = queue[0];
-            
-            //generate list of neighbors to be added to the back 
-            String[] add_to_back = getNeighbors(queue[0]);
-            
-            String[] dupecheck = visited;
-
-            List<String> dupecheck_List = Arrays.asList(dupecheck);
-
-
-            queue[0] = null;
-            queue = removeNullsFromStringArray(queue);
-            String[] new_que = new String[(queue.length) + (add_to_back.length)];
-            int j = 0;
-
-
-            // add all of que to new que
-            for (; j < queue.length; j++) {
-                new_que[j] = queue[j];
-            }
-            
-            // add all of add to back to new que
-            for (int X = 0; j < new_que.length; j++) {
-                if (!dupecheck_List.contains(add_to_back[X]) ) {
-
-                    new_que[j] = add_to_back[X];
+        while (que.isEmpty() != true) {
+            String current_node = que.remove(0);
+            visit_order.add(current_node);
+            String[] values_to_que = getNeighbors(current_node);
+            Arrays.sort(values_to_que);
+            for (int i = 0; i < values_to_que.length; i++) {
+                if (!que.contains(values_to_que[i]) && !visit_order.contains(values_to_que[i])) {
+                    que.add(values_to_que[i]);
 
                 }
-                X++;
             }
-            queue = new_que;
-            queue = removeNullsFromStringArray(queue);
-            i++;
-            
-        }
-        return visited;
 
+        }
+        String[] visted_final = visit_order.toArray(new String[0]);
+        return visted_final;
     }
 
     @Override
     public Graph bfsTree(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'bfsTree'");
+        ArrayList<String> que = new ArrayList<String>();
+        que.add(vertex);
+        ArrayList<String> visit_order = new ArrayList<String>();
+        int counter = 0;
+        ArrayList<String[]> edge_holder = new ArrayList<String[]>();
+        String previous_node = vertex;
+        while (que.isEmpty() != true) {
+            String current_node = que.remove(0);
+            visit_order.add(current_node);
+            String[] values_to_que = getNeighbors(current_node);
+            Arrays.sort(values_to_que);
+            for (int i = 0; i < values_to_que.length; i++) {
+                if (!que.contains(values_to_que[i]) && !visit_order.contains(values_to_que[i])) {
+                    que.add(values_to_que[i]);
+
+                }
+
+                if (counter != 0) {
+                    String[] traversed_edge = new String[] { current_node, previous_node };
+                    boolean alreadyExists = false;
+
+                    // Check if an equivalent array already exists in the list
+                    for (String[] existingEdge : edge_holder) {
+                        if (existingEdge[0].equals(traversed_edge[0]) && existingEdge[1].equals(traversed_edge[1])) {
+                            alreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyExists) {
+                        edge_holder.add(traversed_edge);
+                    }
+                }
+
+            }
+            previous_node = current_node;
+            counter++;
+        }
+        /*
+         * returns a graph class therefore must be
+         * return and instance of the graph class
+         * we want to return a adjaceny matrix of the traversal
+         * 
+         * What do we need
+         * the edges taversed
+         * and the labels
+         * 
+         * we have labels labels needs not be changed persay
+         * labels can be the "visited order because that will contain on viable vertexs"
+         */
+        String[] visted_vertexs = visit_order.toArray(new String[0]);
+        String[][] traversal_edges = edge_holder.toArray(new String[0][1]);
+        Graph BFS_graph = new StringGraph(visted_vertexs, traversal_edges);
+
+        return BFS_graph;
     }
 
     @Override
     public String[] dfsOrder(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'dfsOrder'");
+        Stack<String> stack = new Stack<>();
+        Set<String> visited = new HashSet<>();
+        List<String> visitOrder = new ArrayList<>();
+
+        stack.push(vertex);
+
+        while (!stack.isEmpty()) {
+            String current_node = stack.pop();
+
+            if (!visited.contains(current_node)) {
+                visited.add(current_node);
+                visitOrder.add(current_node);
+
+                String[] neighbors = getNeighbors(current_node);
+                Arrays.sort(neighbors, Collections.reverseOrder()); // Sort neighbors in reverse order for DFS
+
+                for (String neighbor : neighbors) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+
+        return visitOrder.toArray(new String[0]);
     }
 
     @Override
     public Graph dfsTree(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'dfsTree'");
+        Stack<String> stack = new Stack<>();
+        Set<String> visited = new HashSet<>();
+        List<String> visitOrder = new ArrayList<>();
+        ArrayList<String[]> edge_holder = new ArrayList<>();
+        String previous_node = vertex;
+        int counter = 0;
+
+        stack.push(vertex);
+        while (!stack.isEmpty()) {
+            String current_node = stack.pop();
+
+            if (!visited.contains(current_node)) {
+                visited.add(current_node);
+                visitOrder.add(current_node);
+
+                String[] neighbors = getNeighbors(current_node);
+                Arrays.sort(neighbors, Collections.reverseOrder()); // Sort neighbors in reverse order for DFS
+
+                for (String neighbor : neighbors) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+
+                if (counter != 0) {
+                    String[] traversed_edge = new String[] { current_node, previous_node };
+                    boolean alreadyExists = false;
+
+                    // Check if an equivalent array already exists in the list
+                    for (String[] existingEdge : edge_holder) {
+                        if (existingEdge[0].equals(traversed_edge[0]) && existingEdge[1].equals(traversed_edge[1])) {
+                            alreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyExists) {
+                        edge_holder.add(traversed_edge);
+                    }
+                }
+                previous_node = current_node;
+                counter++;
+            }
+        }
+
+        String[] visted_vertexs = visitOrder.toArray(new String[0]);
+        String[][] traversal_edges = edge_holder.toArray(new String[0][1]);
+        Graph DFS_graph = new StringGraph(visted_vertexs, traversal_edges);
+
+        return DFS_graph;
     }
 
+    // unsure
+    /*
+     * assume the following
+     * a connected graph means that all elements are have at least one edge
+     * or that all elements that have and edge are connected to all edges through
+     * some for
+     * 
+     * the main pivot here is; does a floating vertex with no edge fail the
+     * connected condition
+     */
+
+    /*
+     * GOAL: if we pick a starting point all vertexs should be visited if not then
+     * they are not connneceted
+     * 
+     * however better idea compare lengths since the DFS/BFS are based on existing
+     * list of labels if all labels are visited by search then they should be the
+     * same length
+     */
     @Override
     public boolean isConnected() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isConnected'");
+
+        Graph Search_graph = this.bfsTree(labels[0]);
+        String[] visited_verticies = Search_graph.getVertices();
+        String[] exsiting_vertices = this.getVertices();
+
+        if (visited_verticies.length != exsiting_vertices.length) {
+            return false;
+        }
+        return true;
     }
 
     public static String[] removeNullsFromStringArray(String[] inputArray) {
@@ -530,18 +637,19 @@ public class StringGraph implements Graph {
         }
         return listWithoutNulls.toArray(new String[0]);
     }
- /*
-
-
-ignore this i was attempting to do a I for x in array through  a function but i had issuse adding to the que
-
-    public String[] visitStrings(String[] queue) {
-        String[] visited = new String[numVertices];
-        for (int i = 0; i < queue.length; i++) {
-            visited[i + 1] = queue[i];
-        }
-
-        return visited;
-    }
- */
+    /*
+     * 
+     * 
+     * ignore this i was attempting to do a I for x in array through a function but
+     * i had issuse adding to the que
+     * 
+     * public String[] visitStrings(String[] queue) {
+     * String[] visited = new String[numVertices];
+     * for (int i = 0; i < queue.length; i++) {
+     * visited[i + 1] = queue[i];
+     * }
+     * 
+     * return visited;
+     * }
+     */
 }

@@ -16,8 +16,16 @@ public class Graph_3_presscott {
     g.addVertices(vertices);
     g.addEdges(edges);
     System.out.println(Arrays.deepToString(g.getNeighbors("A")));
+    System.out.println(Arrays.deepToString(g.getNeighbors("P")));
+    System.out.println(Arrays.deepToString(g.getNeighbors("C")));
     System.out.println(Arrays.deepToString(g.getNeighbors("V")));
     
+    
     System.out.println(Arrays.deepToString(g.bfsOrder("A")));
+    System.out.println((g.bfsTree("A")));
+    System.out.println(Arrays.deepToString(g.dfsOrder("A")));
+    System.out.println((g.dfsTree("A")));
+    
+
     }
 }
