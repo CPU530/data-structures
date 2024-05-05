@@ -8,8 +8,12 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -419,15 +423,19 @@ public class StringGraph implements Graph {
     public String[] getNeighbors(String vertex) throws GraphException {
         String[] neighbors = new String[numVertices];
         int V_POS = findIndex(vertex);
-
+        if (V_POS == -1) {
+            throw new GraphException("This vertex does not exist");
+            
+        }
         for (int i = 0; i < numVertices; i++) {
-
+        
             if (this.edgeMatrix[V_POS][i] == true) {
                 neighbors[i] = labels[i];
             }
 
         }
         neighbors = removeNullsFromStringArray(neighbors);
+        //System.out.println(Arrays.deepToString(neighbors));
         return neighbors;
     }
 
@@ -653,16 +661,92 @@ public class StringGraph implements Graph {
      * }
      */
 
-     
     @Override
-    public String[] bfsSSSP(String vertex) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'bfsSSSP'");
+public String[] bfsSSSP(String vertex) throws GraphException {
+    // Initialize data structures
+    Map<String, String> previousVertices = new HashMap<>();
+    Map<String, Integer> distances = new HashMap<>();
+    Queue<String> queue = new LinkedList<>();
+
+    // Initialize distances (source vertex has distance 0)
+    distances.put(vertex, 0);
+    previousVertices.put(vertex, null);
+    queue.add(vertex);
+
+    while (!queue.isEmpty()) {
+        String currentVertex = queue.poll();
+        String[] neighbors = getNeighbors(currentVertex);
+        Arrays.sort(neighbors);
+
+        for (String neighbor : neighbors) {
+            if (!distances.containsKey(neighbor)) {
+                // Neighbor not visited yet
+                distances.put(neighbor, distances.get(currentVertex) + 1);
+                previousVertices.put(neighbor, currentVertex);
+                queue.add(neighbor);
+            }
+        }
     }
+
+    // Convert previousVertices map to an array
+    String[] result = new String[previousVertices.size()];
+    int index = 0;
+    for (Map.Entry<String, String> entry : previousVertices.entrySet()) {
+        result[index++] = entry.getValue();
+    }
+
+    return result;
+}
 
     @Override
     public String[] shortestPath(String s, String t) throws GraphException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'shortestPath'");
+        // Perform BFS starting from vertex s
+        if (findIndex(t) == -1|| findIndex(s) == -1) {
+            throw new GraphException("One or vertices does not exist");
+            
+        }
+        if (isConnected() == false) {
+            String[] disconnnected_vertex = new String[1];
+            disconnnected_vertex[0] = "";
+            return disconnnected_vertex;   
+           }
+
+        ArrayList<String> queue = new ArrayList<>();
+        ArrayList<String> visited = new ArrayList<>();
+        HashMap<String, String> previousMap = new HashMap<>(); // Stores previous vertex for each visited vertex
+    
+        queue.add(s);
+        visited.add(s);
+        previousMap.put(s, null);
+    
+        while (!queue.isEmpty()) {
+            String currentVertex = queue.remove(0);
+    
+            // Process neighbors
+            String[] neighbors = getNeighbors(currentVertex);
+            for (String neighbor : neighbors) {
+                if (!visited.contains(neighbor)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                    previousMap.put(neighbor, currentVertex);
+                }
+            }
+        }
+    
+        // Construct the path from t to s
+        ArrayList<String> path = new ArrayList<>();
+        String current = t;
+        while (current != null) {
+            path.add(current);
+            current = previousMap.get(current);
+        }
+    
+        // Convert path to String array (reverse the order)
+        String[] result = new String[path.size()];
+        for (int i = 0; i < path.size(); i++) {
+            result[i] = path.get(path.size() - 1 - i);
+        }
+    
+        return result;
     }
 }
