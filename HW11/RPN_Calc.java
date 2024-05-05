@@ -1,6 +1,12 @@
+/**
+ *
+ * @author Robert McVey
+ * this file establishes a class that functions as a RPN calculator
+ */
+
 import java.util.Scanner;
 
-public class RPN_testing {
+public class RPN_Calc {
     public static void main(String[] args) {
         DLinked_StackGeneric<Integer> stack = new DLinked_StackGeneric<>(); // Assuming you've imported the custom Stack class
         Scanner scanner = new Scanner(System.in);
